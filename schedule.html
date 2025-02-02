@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Schedule Generator</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .home-btn {
+            background-color: #7369F4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .home-btn:hover {
+            background-color: #5a53c0;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #7369F4;
+        }
+
+        .btn-primary {
+            background-color: #7369F4;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #5a53c0;
+        }
+
+        .btn-download {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .schedule-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .schedule-table th, .schedule-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .schedule-table th {
+            background-color: #f4f4f4;
+        }
+
+        .alert-container {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .form-group input[type="file"] {
+            border: 1px solid #ddd;
+            padding: 8px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Alert Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alert-container">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container mt-5">
+        <!-- Home Button -->
+        <a href="/" class="home-btn mb-4" aria-label="Go to Home">
+            <i class="bi bi-house-door-fill"></i> Home
+        </a>
+
+        <!-- Main Form Card -->
+        <div class="form-card">
+            <h1 class="text-center mb-4">Schedule Generator</h1>
+
+            <!-- Bulk File Upload Form -->
+            <form action="/schedule" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="bulk_file">Upload Excel/CSV File:</label>
+                    <input type="file" class="form-control-file" id="bulk_file" name="bulk_file" accept=".xlsx,.csv">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Generate Schedule</button>
+            </form>
+
+            <!-- Download Links Section -->
+            {% if schedule_files %}
+                <div class="mt-4">
+                    <p class="alert alert-success">
+                        Schedules have been successfully generated! Click below to download:
+                    </p>
+                    {% for file in schedule_files %}
+                        <a href="{{ url_for('download_file', filename=file) }}" class="btn btn-primary btn-download" aria-label="Download {{ file.split('_')[0] }} schedule">
+                            Download {{ file.split('_')[0] }} Schedule
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="mt-4 text-muted">
+                    No schedules generated yet. Please upload an Excel/CSV file to create schedules.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
